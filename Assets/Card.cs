@@ -9,38 +9,51 @@ public enum Suit
     Diamonds = 3,
     Spades = 4,
 }
-//public enum Rank
-//{
-//    Ace = 1,
-//    2 = 2
-//}
-[CreateAssetMenu]
-public class Card : ScriptableObject
+
+public class Card
 {
+    public static Dictionary<Suit, string> suitDict = new Dictionary<Suit, string>()
+    {
+        {Suit.Hearts,"H"},
+        {Suit.Clubs, "C"},
+        {Suit.Diamonds,"D"},
+        {Suit.Spades, "S"}
+    };
+    public static Dictionary<int, string> rankDict = new Dictionary<int, string>()
+    {
+        {1, "A"},
+        {2, "2"},
+        {3, "3"},
+        {4, "4"},
+        {5, "5"},
+        {6, "6"},
+        {7, "7"},
+        {8, "8"},
+        {9, "9"},
+        {10, "10"},
+        {11, "J"},
+        {12, "Q"},
+        {13, "K"}
+    };
+
+
     public int _rank;
     public Suit _suit;
 
-    public int Rank { get { return _rank; } }
-    public Suit Suit { get { return _suit; } }
+    public Sprite _art;
 
-    private GameObject _card;
+    GameObject _card;
 
-    public Card(Suit suit, int rank)
+    public Card(Suit suit, int rank, Sprite art)
     {
-        // to do: validate rank, position, and rotation
-        string assetName = string.Format("Card_{0}_{1}", suit, rank);  // Example:  "Card_1_10" would be the Jack of Hearts.
-        GameObject asset = GameObject.Find(assetName);
-        if (asset == null)
-        {
-            Debug.LogError("Asset '" + assetName + "' could not be found.");
-        }
-        else
-        {
-            //_card = Instantiate(asset, position, rotation);
-            _suit = suit;
-            _rank = rank;
-        }
+        _suit = suit;
+        _rank = rank;
+        _art = art;
     }
+}
 
-    public Sprite art;
+public struct Pile
+{
+
+    List<Card> cards;
 }
