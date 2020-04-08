@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public List<Card> hand;
+    public List<Card> hand; 
     public List<Card> discard;
 
     // Start is called before the first frame update
@@ -19,9 +19,15 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
+    /// <summary>
+    /// Draws a card from the one list and adds it to the other
+    /// </summary>
+    /// <param name="dst">Destination deck</param>
+    /// <param name="src">Source deck</param>
+    /// <return><c>if (src.Count <= 0)</c></return>
     public void DrawCard(List<Card> dst, List<Card> src)
     {
         if (src.Count <= 0)

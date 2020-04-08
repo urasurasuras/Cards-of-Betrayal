@@ -63,9 +63,14 @@ public class GameManager : MonoBehaviour
 
     public void ShiffleDeck()
     {
-        Shuffle<Card>(_instance.neutralCardList);
+        Shuffle(_instance.neutralCardList);
     }
-    static void Shuffle<List>(List<Card> alpha)
+
+    /// <summary>
+    /// Shuffle deck
+    /// </summary>
+    /// <param name="alpha">Deck</param>
+    static void Shuffle(List<Card> alpha)
     {
         for (int i = 0; i < alpha.Count; i++)
         {
@@ -77,6 +82,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("Shuffled "+alpha); ;
     }
 
+    /// <summary>
+    /// Deals <c>num_cards</c> amount of cards to each player
+    /// </summary>
+    /// <param name="num_cards">Number of cards to deal</param>
     public void DealCards(int num_cards)
     {
         for (int i = 0; i < num_cards; i++) 
@@ -87,10 +96,20 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Register player to <c>GameManager.playerList</c> 
+    /// </summary>
+    /// <param name="pc">Player to register</param>
     public void RegisterPlayerControl(Player pc)
     {
         playerList.Add(pc);
     }
+
+    /// <summary>
+    /// De-register player to <c>GameManager.playerList</c> 
+    /// </summary>
+    /// <param name="pc">Player to register</param>
     public void deRegisterPlayerControl(Player pc)
     {
         playerList.Remove(pc);
