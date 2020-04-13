@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public List<Card> hand; 
+    public GameObject go_hand;
+    public List<Card> hand;
+    public GameObject go_discard;
     public List<Card> discard;
+    public GameObject prefab_card;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +41,12 @@ public class Player : MonoBehaviour
         var card = src[src.Count - 1];
         dst.Add(card);
         src.Remove(card);
-        Debug.Log(this.name + " drew " + card._rank + " of "+card._suit);
+        Debug.Log(this.name + " drew " + card._rank + " of " + card._suit);
+
+        var go_card = Instantiate(prefab_card, this.transform);
+        var anana = go_card.GetComponent<go_Card>();
+        anana.sr.sprite = card._art;
+        anana.owner_player = gameObject;
+        anana.transform.parent = go_hand.transform;
     }
 }
