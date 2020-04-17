@@ -1,0 +1,3 @@
+ - Counter-clockwise (turn base state machine?)
+ - Grid layout for hands
+ - Online (p2p? client server?)

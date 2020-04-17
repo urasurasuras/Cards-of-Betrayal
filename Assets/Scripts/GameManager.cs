@@ -29,6 +29,10 @@ public class GameManager : MonoBehaviour
         _instance.playerList = new List<Player>();
         DealCards(5);
     }
+    private void Update()
+    {
+
+    }
 
     [MenuItem("GameObject/Game Manager/Card Game", false, 10)]
     static void CardManager_new()
@@ -61,9 +65,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ShiffleDeck()
+    public void PickStartingPlayer()
+    {
+        print(PickRandom(_instance.playerList));
+    }
+    public void ShuffleDeck()
     {
         Shuffle(_instance.neutralCardList);
+    }
+
+    Player PickRandom(List<Player> players)
+    {
+        int random = UnityEngine.Random.Range(0, players.Count);
+        return players[random];
     }
 
     /// <summary>
@@ -114,9 +128,4 @@ public class GameManager : MonoBehaviour
     {
         playerList.Remove(pc);
     }
-    private void Update()
-    {
-       
-    }
-
 }
