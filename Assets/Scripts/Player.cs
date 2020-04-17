@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    //public int index;
     public GameObject go_hand;
     public List<Card> hand;
     public GameObject go_discard;
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
     {
         hand = new List<Card>();
         discard = new List<Card>();
-        GameManager.Instance.RegisterPlayerControl(this);
+        //GameManager.Instance.RegisterPlayerControl(this);
         Debug.Log(this + " is registered");
     }
 

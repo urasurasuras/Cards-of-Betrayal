@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
     [SerializeField]
     List<Player> playerList;    //List of players that have cards in their hands and their discard piles
+
+    public GameObject playerPrefab;
+    public List<GameObject> playerGOlist;
+    public Player currentPlayer;
     [SerializeField]
     List<Card> neutralCardList; //List of cards that are in the middle
     public static GameManager Instance
@@ -26,14 +30,62 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
         CreateStandardDeck();
-        _instance.playerList = new List<Player>();
-        DealCards(5);
+        //_instance.playerList = new List<Player>(4);
+
+        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(0, -4), new Quaternion(0, 0, 0, 0)));
+        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(7, 0), new Quaternion(0, 0, -90, 0)));
+        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(0, 3), new Quaternion(0, 0, 180, 0)));
+        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(-7, 0), new Quaternion(0, 0, 90, 0)));
+
+        foreach (GameObject player in playerGOlist)
+        {
+            playerList.Add(player.GetComponent<Player>());
+        }
+
+        print(_instance.playerList.Count);
     }
     private void Update()
     {
 
     }
 
+    //Public button functions
+    public void PickStartingPlayer()
+    {
+        currentPlayer = PickRandom(_instance.playerList);
+        EditorGUIUtility.PingObject(currentPlayer);
+    }
+    public void ShuffleDeck()
+    {
+        Shuffle(_instance.neutralCardList);
+    }
+
+    //ContextMenus
+
+    [ContextMenu("Print players")]
+    void PrintPlayers()
+    {
+        print(_instance.playerList.Count);
+    }
+
+    [ContextMenu("Ping next player")]
+    void PingNext()
+    {
+        Player nextPlayer;
+        int current_index = playerList.IndexOf(currentPlayer);
+        if (current_index == playerList.Count-1)
+        {
+            nextPlayer = playerList[0];
+        }
+        else
+        {
+            nextPlayer = playerList[current_index + 1];
+        }
+        currentPlayer = nextPlayer;
+        EditorGUIUtility.PingObject(currentPlayer);
+    }
+
+    //MenuItems
     [MenuItem("GameObject/Game Manager/Card Game", false, 10)]
     static void CardManager_new()
     {
@@ -43,8 +95,6 @@ public class GameManager : MonoBehaviour
             return;
         }
         new GameObject("CardManager");
-
-
     }
     [MenuItem("Create/Deck/Standard Playing Deck")]
     static void CreateStandardDeck()
@@ -65,15 +115,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void PickStartingPlayer()
-    {
-        print(PickRandom(_instance.playerList));
-    }
-    public void ShuffleDeck()
-    {
-        Shuffle(_instance.neutralCardList);
-    }
+    //Private functions
 
+    /// <summary>
+    /// Returns a random item from a list
+    /// </summary>
+    /// <param name="players">List to pick from</param>
+    /// <returns>null on error</returns>
     Player PickRandom(List<Player> players)
     {
         int random = UnityEngine.Random.Range(0, players.Count);
@@ -111,21 +159,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Register player to <c>GameManager.playerList</c> 
-    /// </summary>
-    /// <param name="pc">Player to register</param>
-    public void RegisterPlayerControl(Player pc)
-    {
-        playerList.Add(pc);
-    }
+//    /// <summary>
+//    /// Register player to <c>GameManager.playerList</c> 
+//    /// </summary>
+//    /// <param name="pc">Player to register</param>
+//    public void RegisterPlayerControl(Player pc)
+//    {
+//        playerList.Insert(pc.index - 1, pc);
+//    }
 
-    /// <summary>
-    /// De-register player to <c>GameManager.playerList</c> 
-    /// </summary>
-    /// <param name="pc">Player to register</param>
-    public void deRegisterPlayerControl(Player pc)
-    {
-        playerList.Remove(pc);
-    }
+//    /// <summary>
+//    /// De-register player to <c>GameManager.playerList</c> 
+//    /// </summary>
+//    /// <param name="pc">Player to register</param>
+//    public void deRegisterPlayerControl(Player pc)
+//    {
+//        playerList.Remove(pc);
+//    }
 }
