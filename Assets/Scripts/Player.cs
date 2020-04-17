@@ -48,6 +48,9 @@ public class Player : MonoBehaviour
         var anana = go_card.GetComponent<go_Card>();
         anana.sr.sprite = card._art;
         anana.owner_player = gameObject;
-        anana.transform.parent = go_hand.transform;
+        anana.transform.SetParent(go_hand.transform, true);
+        anana.transform.rotation = transform.rotation;
+        Debug.Log(gameObject.name + " " + transform.rotation.eulerAngles);
+        anana.transform.position += (.5f * transform.right +  new Vector3(0, 0, .1f) ) * go_hand.transform.childCount;
     }
 }

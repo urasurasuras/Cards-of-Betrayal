@@ -32,10 +32,20 @@ public class GameManager : MonoBehaviour
         CreateStandardDeck();
         //_instance.playerList = new List<Player>(4);
 
-        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(0, -4), new Quaternion(0, 0, 0, 0)));
-        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(7, 0), new Quaternion(0, 0, -90, 0)));
-        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(0, 3), new Quaternion(0, 0, 180, 0)));
-        playerGOlist.Add(Instantiate(playerPrefab, new Vector2(-7, 0), new Quaternion(0, 0, 90, 0)));
+        GameObject g = Instantiate(playerPrefab, new Vector2(0, -4), Quaternion.identity);
+        playerGOlist.Add(g);
+
+        g = (Instantiate(playerPrefab, new Vector2(7, 0), Quaternion.identity)); 
+        playerGOlist.Add(g);
+        g.transform.Rotate(0, 0, 90);
+
+        g = Instantiate(playerPrefab, new Vector2(0, 3), Quaternion.identity);
+        playerGOlist.Add(g);
+        g.transform.Rotate(0, 0, 180);
+
+        g = Instantiate(playerPrefab, new Vector2(-7, 0), Quaternion.identity); 
+        playerGOlist.Add(g);
+        g.transform.Rotate(0, 0, -90);
 
         foreach (GameObject player in playerGOlist)
         {

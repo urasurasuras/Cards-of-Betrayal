@@ -303,6 +303,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 6942421351521583413, guid: 3d055d282722fd5458c34ad9fb733c5d,
     type: 3}
   playerGOlist: []
+  currentPlayer: {fileID: 0}
 --- !u!4 &796716823
 Transform:
   m_ObjectHideFlags: 0
