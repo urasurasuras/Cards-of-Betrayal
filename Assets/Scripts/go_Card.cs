@@ -6,15 +6,25 @@ public class go_Card : MonoBehaviour
 {
     public SpriteRenderer sr;
     public GameObject owner_player;
+    public GameObject back;
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(owner_player.transform);
+        back = gameObject.transform.GetChild(1).gameObject;
+
+        Debug.Log(back);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    [ContextMenu("Flip")]
+    void Flip()
+    {
+        if (back.activeSelf) back.SetActive(false);
+        else back.SetActive(true);
     }
 }

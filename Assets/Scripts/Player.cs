@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
         hand = new List<Card>();
         discard = new List<Card>();
         //GameManager.Instance.RegisterPlayerControl(this);
-        Debug.Log(this + " is registered");
+        //Debug.Log(this + " is registered");
     }
 
     // Update is called once per frame
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
         var card = src[src.Count - 1];
         dst.Add(card);
         src.Remove(card);
-        Debug.Log(this.name + " drew " + card._rank + " of " + card._suit);
+        //Debug.Log(this.name + " drew " + card._rank + " of " + card._suit);
 
         var go_card = Instantiate(prefab_card, this.transform);
         var anana = go_card.GetComponent<go_Card>();
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         anana.owner_player = gameObject;
         anana.transform.SetParent(go_hand.transform, true);
         anana.transform.rotation = transform.rotation;
-        Debug.Log(gameObject.name + " " + transform.rotation.eulerAngles);
+        //Debug.Log(gameObject.name + " " + transform.rotation.eulerAngles);
         anana.transform.position += (.5f * transform.right +  new Vector3(0, 0, .1f) ) * go_hand.transform.childCount;
     }
 }
