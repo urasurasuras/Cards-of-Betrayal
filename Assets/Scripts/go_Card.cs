@@ -22,9 +22,18 @@ public class go_Card : MonoBehaviour
     }
 
     [ContextMenu("Flip")]
-    void Flip()
+    public void Flip()
     {
         if (back.activeSelf) back.SetActive(false);
         else back.SetActive(true);
+    }
+
+    public void FaceDown()
+    {
+        back.SetActive(true);
+    }
+    public void FaceUp()
+    {
+        back.SetActive(false);
     }
 }

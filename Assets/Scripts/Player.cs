@@ -53,4 +53,34 @@ public class Player : MonoBehaviour
         //Debug.Log(gameObject.name + " " + transform.rotation.eulerAngles);
         anana.transform.position += (.5f * transform.right +  new Vector3(0, 0, .1f) ) * go_hand.transform.childCount;
     }
+
+    public void FlipHand()
+    {
+        GameObject current_hand = gameObject.transform.GetChild(0).gameObject;
+
+        foreach (Transform child in current_hand.transform)
+        {
+            child.gameObject.GetComponent<go_Card>().Flip();
+        }
+    }
+
+    public void FaceHandUp()
+    {
+        GameObject current_hand = gameObject.transform.GetChild(0).gameObject;
+
+        foreach (Transform child in current_hand.transform)
+        {
+            child.gameObject.GetComponent<go_Card>().FaceUp();
+        }
+    }
+    
+    public void FaceHandDown()
+    {
+        GameObject current_hand = gameObject.transform.GetChild(0).gameObject;
+
+        foreach (Transform child in current_hand.transform)
+        {
+            child.gameObject.GetComponent<go_Card>().FaceDown();
+        }
+    }
 }

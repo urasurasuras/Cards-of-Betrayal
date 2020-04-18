@@ -34,25 +34,29 @@ public class GameManager : MonoBehaviour
 
         GameObject g = Instantiate(playerPrefab, new Vector2(0, -4), Quaternion.identity);
         playerGOlist.Add(g);
+        playerList.Add(g.GetComponent<Player>());
 
         g = (Instantiate(playerPrefab, new Vector2(7, 0), Quaternion.identity)); 
         playerGOlist.Add(g);
         g.transform.Rotate(0, 0, 90);
+        playerList.Add(g.GetComponent<Player>());
 
         g = Instantiate(playerPrefab, new Vector2(0, 3), Quaternion.identity);
         playerGOlist.Add(g);
         g.transform.Rotate(0, 0, 180);
+        playerList.Add(g.GetComponent<Player>());
 
         g = Instantiate(playerPrefab, new Vector2(-7, 0), Quaternion.identity); 
         playerGOlist.Add(g);
         g.transform.Rotate(0, 0, -90);
+        playerList.Add(g.GetComponent<Player>());
 
-        foreach (GameObject player in playerGOlist)
-        {
-            playerList.Add(player.GetComponent<Player>());
-        }
+        //foreach (GameObject player in playerGOlist)
+        //{
+        //    playerList.Add(player.GetComponent<Player>());
+        //}
 
-        print(_instance.playerList.Count);
+        //print(_instance.playerList.Count);
     }
     private void Update()
     {
@@ -60,10 +64,24 @@ public class GameManager : MonoBehaviour
     }
 
     //Public button functions
+    public void SetPlayerNext()
+    {
+        Player nextPlayer;
+        int current_index = playerList.IndexOf(currentPlayer);
+        if (current_index == playerList.Count - 1)
+        {
+            nextPlayer = playerList[0];
+        }
+        else
+        {
+            nextPlayer = playerList[current_index + 1];
+        }
+
+        setCurrentPlayer(nextPlayer);
+    }
     public void PickStartingPlayer()
     {
-        currentPlayer = PickRandom(_instance.playerList);
-        EditorGUIUtility.PingObject(currentPlayer);
+        setCurrentPlayer(PickRandom(_instance.playerList));
     }
     public void ShuffleDeck()
     {
@@ -76,23 +94,6 @@ public class GameManager : MonoBehaviour
     void PrintPlayers()
     {
         print(_instance.playerList.Count);
-    }
-
-    [ContextMenu("Ping next player")]
-    void PingNext()
-    {
-        Player nextPlayer;
-        int current_index = playerList.IndexOf(currentPlayer);
-        if (current_index == playerList.Count-1)
-        {
-            nextPlayer = playerList[0];
-        }
-        else
-        {
-            nextPlayer = playerList[current_index + 1];
-        }
-        currentPlayer = nextPlayer;
-        EditorGUIUtility.PingObject(currentPlayer);
     }
 
     //MenuItems
@@ -167,6 +168,31 @@ public class GameManager : MonoBehaviour
                 p.DrawCard(p.hand, _instance.neutralCardList);
             }
         }
+    }
+
+    /// <summary>
+    /// Set current player and flip cards accordingly
+    /// </summary>
+    /// <param name="current">The new current player</param>
+    void setCurrentPlayer(Player current)
+    {
+        _instance.currentPlayer = current;
+
+        //Flip cards based on current player
+        foreach (Player p in playerList)
+        {
+            if (p == currentPlayer)
+            {
+                p.FaceHandUp();
+            }
+            else
+            {
+                p.FaceHandDown();
+            }
+        }
+
+        //Ping current player in editor
+        EditorGUIUtility.PingObject(currentPlayer);
     }
 
 //    /// <summary>
