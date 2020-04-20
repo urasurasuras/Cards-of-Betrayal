@@ -26,6 +26,20 @@ public class Player : MonoBehaviour
 
     }
 
+    public void Discard(Card card)
+    {
+        DrawCard(discard, hand, card);
+    }
+
+    public void DeckToHand()
+    {
+
+    }
+    public void DiscardToHand(GameObject card)
+    {
+        //Draw game object as is
+    }
+  
     /// <summary>
     /// Draws a card from the one list and adds it to the other
     /// </summary>
@@ -44,15 +58,25 @@ public class Player : MonoBehaviour
         src.Remove(card);
         //Debug.Log(this.name + " drew " + card._rank + " of " + card._suit);
 
-        var go_card = Instantiate(prefab_card, this.transform);
-        var anana = go_card.GetComponent<go_Card>();
+        GameObject go_card = Instantiate(prefab_card, this.transform);
+        go_Card anana = go_card.GetComponent<go_Card>();
         anana.sr.sprite = card._art;
-        anana.owner_player = gameObject;
+        anana.go_owner_player = gameObject;
         anana.transform.SetParent(go_hand.transform, true);
         anana.transform.rotation = transform.rotation;
+        anana.card = card;
         //Debug.Log(gameObject.name + " " + transform.rotation.eulerAngles);
+
+        //Offset based on number of cards in hand
         anana.transform.position += (.5f * transform.right +  new Vector3(0, 0, .1f) ) * go_hand.transform.childCount;
     }
+
+    public void DrawCard(List<Card> dst, List<Card> src, Card card)
+    {
+        dst.Add(card);
+        src.Remove(card);
+    }
+
 
     public void FlipHand()
     {

@@ -34,10 +34,17 @@ public class GameManager : MonoBehaviour
 
         GameObject g = Instantiate(playerPrefab, new Vector2(0, -4), Quaternion.identity);
         playerGOlist.Add(g);
+        var discardPos = g.transform.GetChild(1);
+        discardPos.position = g.transform.position;
+        discardPos.localPosition = new Vector2(30, 8);
         playerList.Add(g.GetComponent<Player>());
+
 
         g = (Instantiate(playerPrefab, new Vector2(7, 0), Quaternion.identity)); 
         playerGOlist.Add(g);
+        discardPos = g.transform.GetChild(1);
+        discardPos.position = g.transform.position;
+        discardPos.localPosition = new Vector2(25, 3);
         g.transform.Rotate(0, 0, 90);
         playerList.Add(g.GetComponent<Player>());
 
@@ -49,6 +56,9 @@ public class GameManager : MonoBehaviour
         g = Instantiate(playerPrefab, new Vector2(-7, 0), Quaternion.identity); 
         playerGOlist.Add(g);
         g.transform.Rotate(0, 0, -90);
+        discardPos = g.transform.GetChild(1);
+        discardPos.position = g.transform.position;
+        discardPos.localPosition = new Vector2(15, 15); 
         playerList.Add(g.GetComponent<Player>());
 
         //foreach (GameObject player in playerGOlist)
@@ -81,7 +91,9 @@ public class GameManager : MonoBehaviour
     }
     public void PickStartingPlayer()
     {
-        setCurrentPlayer(PickRandom(_instance.playerList));
+        Player starting = PickRandom(_instance.playerList);
+        starting.DrawCard(starting.hand, neutralCardList);
+        setCurrentPlayer(starting);
     }
     public void ShuffleDeck()
     {
