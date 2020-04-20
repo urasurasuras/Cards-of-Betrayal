@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     //public int index;
+    public GameObject prefab_card;
+
     public GameObject go_hand;
     public List<Card> hand;
     public GameObject go_discard;
     public List<Card> discard;
-    public GameObject prefab_card;
 
     // Start is called before the first frame update
     void Start()
@@ -26,9 +28,24 @@ public class Player : MonoBehaviour
 
     }
 
-    public void Discard(Card card)
+    public void Discard(go_Card card)
     {
-        DrawCard(discard, hand, card);
+        //Physical transfer
+        card.transform.parent = go_discard.transform;
+        card.transform.position = go_discard.transform.position;
+        card.transform.position -= (.5f * transform.forward + new Vector3(0, 0, .1f)) * go_discard.transform.childCount;
+        Debug.Log( card.transform.GetSiblingIndex());
+
+        //logical card transfer
+        DrawCard(discard, hand, card.card);
+
+        //destroy go_Card 2 below
+        //if (go_discard.transform.childCount > 2)
+        //{
+        //    var destroyedCard = go_discard.transform.GetChild(-2).gameObject;
+        //    EditorGUIUtility.PingObject(destroyedCard);
+        //    Destroy(destroyedCard);
+        //}
     }
 
     public void DeckToHand()
@@ -106,5 +123,11 @@ public class Player : MonoBehaviour
         {
             child.gameObject.GetComponent<go_Card>().FaceDown();
         }
+    }
+
+    [ContextMenu("Size of hands")]
+    public void PrintSize()
+    {
+        Debug.Log("Discarded: " + discard.Count);
     }
 }

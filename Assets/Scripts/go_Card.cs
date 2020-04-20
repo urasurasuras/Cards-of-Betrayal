@@ -29,17 +29,14 @@ public class go_Card : MonoBehaviour
         Player owner_player = go_owner_player.GetComponent<Player>();
   
         //owner_player.Discard(this.GetComponent<Card>());
-        EditorGUIUtility.PingObject(this);
 
-        if (this.transform.parent == go_owner_player.transform.GetChild(0))
+        if (transform.parent.gameObject == owner_player.go_hand)
         {//if card is in hand
-            this.transform.parent = owner_player.go_discard.transform;
-            this.transform.position = this.transform.parent.position;
-            owner_player.DrawCard(owner_player.discard, owner_player.hand, card);
+            owner_player.Discard(this);
         }
-        else if (this.transform.parent == go_owner_player.transform.GetChild(1))
+        else if (transform.parent.gameObject == owner_player.go_discard)
         {//if card is in discard pile
-            Debug.Log("this card is in discard pile");
+            Debug.Log("Index: " + this.transform.GetSiblingIndex());
         }
     }
 
