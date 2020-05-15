@@ -80,10 +80,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb432c8dd4123144d9e420d14a627386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  go_hand: {fileID: 6942421351428260037}
-  go_discard: {fileID: 6942421351694967916}
   prefab_card: {fileID: 7344893767307373977, guid: 53387d38c844b484c9af3dbdbd12bfc3,
     type: 3}
+  go_hand: {fileID: 6942421351428260037}
+  go_discard: {fileID: 6942421351694967916}
+  state: 0
 --- !u!1 &6942421351694967916
 GameObject:
   m_ObjectHideFlags: 0

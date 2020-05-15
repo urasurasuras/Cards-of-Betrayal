@@ -1,20 +1,45 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
+public enum GameState
+{
+    None, Action, End
+}
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     [SerializeField]
-    List<Player> playerList;    //List of players that have cards in their hands and their discard piles
-
+    public List<Player> playerList;     //List of players that have cards in their hands and their discard piles
+    public GameObject buttons;          //GO that parents all the buttons
+    //Prefabs
     public GameObject playerPrefab;
-    public List<GameObject> playerGOlist;
+    public GameObject endScorePrefab;
+    public GameObject totalScorePrefab;
+
+    public List<GameObject> go_PlayerList;
     public Player currentPlayer;
-    [SerializeField]
-    List<Card> neutralCardList; //List of cards that are in the middle
+
+    public List<Card> neutralCardList; //List of cards that are in the middle
+    public GameObject go_deck; //Clickable deck in the middle
+
+    public GameObject endScorePanel;
+    public GameObject totalScorePanel;
+    public GameObject statePanel;
+
+    public Text t_currentPlayer;
+    public Text t_currentScore;
+    public Text t_currentDiscard;
+    public int minDiscard;
+
+    public bool showingTotal = false;                  //Toggle for showing total scores
+
+    public GameState GameState = GameState.None;
     public static GameManager Instance
     {
         get
@@ -30,37 +55,55 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
         CreateStandardDeck();
+
+        t_currentPlayer = statePanel.transform.GetChild(0).GetComponent<Text>();
+        t_currentScore = statePanel.transform.GetChild(1).GetComponent<Text>();
+        t_currentDiscard = statePanel.transform.GetChild(2).GetComponent<Text>();
+
         //_instance.playerList = new List<Player>(4);
 
         GameObject g = Instantiate(playerPrefab, new Vector2(0, -4), Quaternion.identity);
-        playerGOlist.Add(g);
+        g.GetComponent<Player>().name = "Player 1";
+        go_PlayerList.Add(g);
         var discardPos = g.transform.GetChild(1);
         discardPos.position = g.transform.position;
         discardPos.localPosition = new Vector2(30, 8);
         playerList.Add(g.GetComponent<Player>());
 
 
-        g = (Instantiate(playerPrefab, new Vector2(7, 0), Quaternion.identity)); 
-        playerGOlist.Add(g);
+        g = (Instantiate(playerPrefab, new Vector2(7, 0), Quaternion.identity));
+        g.GetComponent<Player>().name = "Player 2";
+        go_PlayerList.Add(g);
         discardPos = g.transform.GetChild(1);
         discardPos.position = g.transform.position;
-        discardPos.localPosition = new Vector2(25, 3);
+        discardPos.localPosition = new Vector2(17, 13);
         g.transform.Rotate(0, 0, 90);
         playerList.Add(g.GetComponent<Player>());
 
         g = Instantiate(playerPrefab, new Vector2(0, 3), Quaternion.identity);
-        playerGOlist.Add(g);
+        g.GetComponent<Player>().name = "Player 3";
+        go_PlayerList.Add(g);
+        discardPos = g.transform.GetChild(1);
+        discardPos.position = g.transform.position;
+        discardPos.localPosition = new Vector2(23, 2.5f);
         g.transform.Rotate(0, 0, 180);
         playerList.Add(g.GetComponent<Player>());
 
-        g = Instantiate(playerPrefab, new Vector2(-7, 0), Quaternion.identity); 
-        playerGOlist.Add(g);
+        g = Instantiate(playerPrefab, new Vector2(-7, 0), Quaternion.identity);
+        g.GetComponent<Player>().name = "Player 4";
+        go_PlayerList.Add(g);
         g.transform.Rotate(0, 0, -90);
         discardPos = g.transform.GetChild(1);
         discardPos.position = g.transform.position;
         discardPos.localPosition = new Vector2(15, 15); 
         playerList.Add(g.GetComponent<Player>());
 
+        foreach (Transform button in buttons.transform)
+        {
+            button.gameObject.SetActive(false);
+        }
+        buttons.transform.GetChild(0).gameObject.SetActive(true);
+        buttons.transform.GetChild(4).gameObject.SetActive(true);
         //foreach (GameObject player in playerGOlist)
         //{
         //    playerList.Add(player.GetComponent<Player>());
@@ -68,36 +111,110 @@ public class GameManager : MonoBehaviour
 
         //print(_instance.playerList.Count);
     }
+
+    [ContextMenu("End game")]
+    public void EndGame()
+    {
+        //ends everyone's turn
+        foreach (Player p in playerList)
+        {
+            p.state = PlayerState.None;
+        }
+        endScorePanel.SetActive(true);
+        //displays everyone's scores
+        foreach (Player p in playerList)
+        {
+            //Create panel for final score
+            var score = Instantiate(endScorePrefab, endScorePanel.transform);
+            score.GetComponent<Text>().text = p.name + ": \n" + p.GetScore();
+
+            
+        }
+        if (MasterManager.Instance.globalPlayerList.Count == 0)
+        {//pass scores over
+            MasterManager.Instance.GetPlayers();
+        }
+        else
+        {//add scores
+            foreach (Player p in playerList)
+            {
+                var playerMatch = MasterManager.Instance.globalPlayerList.Find(player => player == p);
+                playerMatch.score += p.GetScore();
+            }                
+        }
+
+        GameState = GameState.End;
+    }
+
+    public bool CheckForShow()
+    {
+        foreach (Player p in playerList)
+        {
+            if (p.discard.Count < minDiscard) return false;
+        }
+        return true;
+    }
+
+
     private void Update()
     {
-
+        
     }
 
     //Public button functions
     public void SetPlayerNext()
     {
-        Player nextPlayer;
-        int current_index = playerList.IndexOf(currentPlayer);
-        if (current_index == playerList.Count - 1)
-        {
-            nextPlayer = playerList[0];
-        }
-        else
-        {
-            nextPlayer = playerList[current_index + 1];
-        }
-
-        setCurrentPlayer(nextPlayer);
+        setCurrentPlayer(getNextPlayer(currentPlayer));
     }
     public void PickStartingPlayer()
     {
         Player starting = PickRandom(_instance.playerList);
-        starting.DrawCard(starting.hand, neutralCardList);
         setCurrentPlayer(starting);
+        starting.DeckToHand();
+        buttons.transform.GetChild(2).gameObject.SetActive(false);
+        buttons.transform.GetChild(3).gameObject.SetActive(true);
+        GameState = GameState.Action;
     }
     public void ShuffleDeck()
     {
         Shuffle(_instance.neutralCardList);
+        buttons.transform.GetChild(0).gameObject.SetActive(false);
+        buttons.transform.GetChild(1).gameObject.SetActive(true);
+    }
+    public void RestartGame()
+    {
+        MasterManager.Instance.GetPlayers();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void DisplayTotalScores()
+    {
+        if (showingTotal)
+        {
+            //clear panel
+            foreach (Transform score in totalScorePanel.transform)
+            {
+                GameObject.Destroy(score.gameObject);
+            }
+            //Deactivate panel
+            totalScorePanel.SetActive(false);
+            showingTotal = false;
+        }
+        else
+        {
+            if (MasterManager.Instance.globalPlayerList.Count == 0)
+            {
+                MasterManager.Instance.GetPlayers();
+            }
+            //Activate panel
+            totalScorePanel.SetActive(true);
+            //create everyone's scores
+            foreach (Player p in MasterManager.Instance.globalPlayerList)
+            {
+                var score = Instantiate(totalScorePrefab, totalScorePanel.transform);
+                score.GetComponent<Text>().text = p.name + ": \n" + p.GetScore();
+            }
+            showingTotal = true;
+        }
     }
 
     //ContextMenus
@@ -109,7 +226,7 @@ public class GameManager : MonoBehaviour
     }
 
     //MenuItems
-    [MenuItem("GameObject/Game Manager/Card Game", false, 10)]
+    //[MenuItem("GameObject/Game Manager/Card Game", false, 10)]
     static void CardManager_new()
     {
         if (GameObject.Find("CardManager"))
@@ -119,7 +236,7 @@ public class GameManager : MonoBehaviour
         }
         new GameObject("CardManager");
     }
-    [MenuItem("Create/Deck/Standard Playing Deck")]
+    //[MenuItem("Create/Deck/Standard Playing Deck")]
     static void CreateStandardDeck()
     {
         //Initialize deck
@@ -180,6 +297,8 @@ public class GameManager : MonoBehaviour
                 p.DrawCard(p.hand, _instance.neutralCardList);
             }
         }
+        buttons.transform.GetChild(1).gameObject.SetActive(false);
+        buttons.transform.GetChild(2).gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -189,6 +308,7 @@ public class GameManager : MonoBehaviour
     void setCurrentPlayer(Player current)
     {
         _instance.currentPlayer = current;
+        current.state = PlayerState.Draw;
 
         //Flip cards based on current player
         foreach (Player p in playerList)
@@ -203,8 +323,27 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        t_currentPlayer.text = "Current player: \n" + currentPlayer.name;
+        t_currentScore.text = "Score: \n" + currentPlayer.GetScore();
+        t_currentDiscard.text = "Discarded: \n " + currentPlayer.discard.Count;
         //Ping current player in editor
-        EditorGUIUtility.PingObject(currentPlayer);
+        //EditorGUIUtility.PingObject(currentPlayer);
+    }
+
+    public Player getNextPlayer(Player player)
+    {
+        Player nextPlayer;
+        int current_index = playerList.IndexOf(player);
+        if (current_index == playerList.Count - 1)
+        {
+            nextPlayer = playerList[0];
+        }
+        else
+        {
+            nextPlayer = playerList[current_index + 1];
+        }
+
+        return nextPlayer;
     }
 
 //    /// <summary>
