@@ -30,9 +30,6 @@ public class MasterManager : MonoBehaviour
         }
     }
 
-    
-    
-
     public void GetPlayers()
     {
         globalPlayerList = GameManager.Instance.playerList; //Get players

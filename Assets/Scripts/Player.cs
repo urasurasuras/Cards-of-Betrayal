@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using System.ComponentModel;
 
 public enum PlayerState
 {
-    None, Draw, Discard
+    None,
+    [Description("Draw")]
+    Draw,
+    [Description("Discard")]
+    Discard
 }
 public class Player : MonoBehaviour
 {
@@ -43,7 +48,7 @@ public class Player : MonoBehaviour
         //Physical transfer
         card.transform.parent = go_discard.transform;
         card.transform.position = go_discard.transform.position;
-        card.transform.position -= (.5f * transform.forward + new Vector3(0, 0, .1f)) * go_discard.transform.childCount;
+        //card.transform.position -= (.5f * transform.forward + new Vector3(0, 0, .1f)) * go_discard.transform.childCount;
         if (card.back.activeSelf)
         {
             card.back.SetActive(false);
@@ -75,13 +80,13 @@ public class Player : MonoBehaviour
         state = PlayerState.None;
         GameManager.Instance.SetPlayerNext();
 
-        //destroy go_Card 2 below
-        //if (go_discard.transform.childCount > 2)
-        //{
-        //    var destroyedCard = go_discard.transform.GetChild(-2).gameObject;
-        //    EditorGUIUtility.PingObject(destroyedCard);
-        //    Destroy(destroyedCard);
-        //}
+        //destroy go_Card below
+        if (go_discard.transform.childCount > 1)
+        {
+            var destroyedCard = go_discard.transform.GetChild(0).gameObject;
+            EditorGUIUtility.PingObject(destroyedCard);
+            GameObject.Destroy(destroyedCard);
+        }
     }
 
     public void DeckToHand()
@@ -93,7 +98,7 @@ public class Player : MonoBehaviour
             print("You already drew, now discard a card.");
             return;
         }
-        DrawCard(hand, GameManager.Instance.neutralCardList);
+        DrawCard(this, GameManager.Instance.neutralCardList);
         state = PlayerState.Discard;
     }
     public void DiscardToHand(Player from, Player to)
@@ -109,7 +114,7 @@ public class Player : MonoBehaviour
     /// <param name="dst">Destination deck</param>
     /// <param name="src">Source deck</param>
     /// <return><c>if (src.Count <= 0)</c></return>
-    public void DrawCard(List<Card> dst, List<Card> src)
+    public void DrawCard(Player dst, List<Card> src)
     {
         if (src.Count <= 0)
         {
@@ -117,13 +122,15 @@ public class Player : MonoBehaviour
             return;
         }
         var card = src[src.Count - 1];
-        DrawCard(dst, src, card);
+        DrawCard(dst.hand, src, card);
         
         //Instantiate new go_Card
-        GameObject go_card = Instantiate(prefab_card, this.transform);
+        GameObject go_card = Instantiate(prefab_card, go_hand.transform);
         go_Card anana = go_card.GetComponent<go_Card>();
+        anana.go_owner_player = dst.gameObject;
         anana.sr.sprite = card._art;
         anana.card = card;
+        //anana.gameObject.AddComponent<go_Card>();
 
         setOwner(anana, go_hand);
        
@@ -136,7 +143,8 @@ public class Player : MonoBehaviour
     public void setOwner(go_Card anana, GameObject pile)
     {
         anana.go_owner_player = gameObject;//set owner
-        anana.transform.SetParent(pile.transform, true);//set parent
+        anana.gameObject.transform.SetParent(pile.transform);//set parent
+        //anana.transform.parent = pile.transform;
         anana.transform.position = this.transform.position;
         anana.transform.rotation = transform.rotation;
         //Offset based on number of cards in hand

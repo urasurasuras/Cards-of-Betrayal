@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sr: {fileID: 8043685460871201959}
-  owner_player: {fileID: 0}
-  back: {fileID: 0}
+  go_owner_player: {fileID: 0}
+  back: {fileID: 7816608777297943934}
 --- !u!61 &4612138658159831364
 BoxCollider2D:
   m_ObjectHideFlags: 0

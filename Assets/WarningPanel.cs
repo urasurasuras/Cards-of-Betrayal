@@ -23,6 +23,7 @@ public class WarningPanel : MonoBehaviour
             _instance = this;
         }
         text = GetComponent<Text>();
+        text.text = string.Empty;
     }
     public IEnumerator ShowMessage(string message, float delay)
     {

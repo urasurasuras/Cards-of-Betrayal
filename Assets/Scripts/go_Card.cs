@@ -11,8 +11,9 @@ public class go_Card : MonoBehaviour
     public GameObject go_owner_player;
     public GameObject back;
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
+        if (this == null) return;
         back = gameObject.transform.GetChild(1).gameObject;
 
         Debug.Log(back);
@@ -31,8 +32,11 @@ public class go_Card : MonoBehaviour
         GameObject currentPile = transform.parent.gameObject;
 
         //owner_player.Discard(this.GetComponent<Card>());
-        if (GameManager.Instance.GameState != GameState.Action) return;
-
+        if (GameManager.Instance.GameState != GameState.Action)
+        {
+            StartCoroutine(WarningPanel.Instance.ShowMessage("Game has not started yet", 2f));
+            return;
+        }
         if (Input.GetMouseButtonDown(0))
         {
             if (owner_player.state == PlayerState.Discard)
@@ -46,14 +50,32 @@ public class go_Card : MonoBehaviour
             {
                 if (currentPile == owner_player.go_discard)
                 {//if card is in discard pile
-                    nextPlayer.setOwner(this, nextPlayer.go_hand);//set this card's parent to next player's hand
+
+                    //if (owner_player.discard.Count )
+                    if (owner_player.discard.Count > 1)
+                    {
+                        //spawn cards below
+                        GameObject go_card = Instantiate(owner_player.prefab_card, currentPile.transform);
+                        go_Card anana = go_card.GetComponent<go_Card>();
+                        
+                        anana.sr.sprite = owner_player.discard[owner_player.discard.Count -2]._art;
+                        anana.card = owner_player.discard[owner_player.discard.Count- 2];
+                        owner_player.setOwner(anana, currentPile);
+                        anana.transform.parent = owner_player.go_discard.transform;
+                        anana.transform.position = owner_player.go_discard.transform.position;
+                    }
+                    nextPlayer.setOwner(gameObject.GetComponent<go_Card>(), nextPlayer.go_hand);//set this card's parent to next player's hand
+
                     nextPlayer.state = PlayerState.Discard;
+                    GameManager.Instance.t_currentPlayer.text = "Current player: \n" + nextPlayer.name + "\n" + nextPlayer.state + "\nPhase";
                     //owner_player.DiscardToHand(nextPlayer, GameManager.Instance.currentPlayer);
+                    //GameObject.Destroy(this);
+                    return;
                 }
             }
             else
             {
-                StartCoroutine(WarningPanel.Instance.ShowMessage(GameManager.Instance.currentPlayer + " already drew a card", 2f));
+                StartCoroutine(WarningPanel.Instance.ShowMessage(GameManager.Instance.currentPlayer.name + " already drew a card", 2f));
 
                 print(GameManager.Instance.currentPlayer + " already drew a card");
             }
@@ -65,7 +87,7 @@ public class go_Card : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
-            if (transform.parent.gameObject != owner_player.go_hand)
+            if (currentPile != owner_player.go_hand)
             {
                 StartCoroutine(WarningPanel.Instance.ShowMessage("End the game with a card from your hand", 2f));
                 print("End the game with a card from your hand");
@@ -83,7 +105,7 @@ public class go_Card : MonoBehaviour
                 StartCoroutine(WarningPanel.Instance.ShowMessage("Not everyone has 5 discarded cards, you cannot show", 2f));
 
                 print("Not everyone has 5 discarded cards, you cannot show");
-                    return;
+                return;
             }
             else
             {

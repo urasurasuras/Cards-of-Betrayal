@@ -174,6 +174,8 @@ public class GameManager : MonoBehaviour
         buttons.transform.GetChild(2).gameObject.SetActive(false);
         buttons.transform.GetChild(3).gameObject.SetActive(true);
         GameState = GameState.Action;
+        currentPlayer.state = PlayerState.Discard;
+        t_currentPlayer.text = "Current player: \n" + currentPlayer.name + "\n" + currentPlayer.state + "\nPhase";
     }
     public void ShuffleDeck()
     {
@@ -294,7 +296,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Player p in playerList)
             {
-                p.DrawCard(p.hand, _instance.neutralCardList);
+                p.DrawCard(p, _instance.neutralCardList);
             }
         }
         buttons.transform.GetChild(1).gameObject.SetActive(false);
@@ -323,7 +325,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        t_currentPlayer.text = "Current player: \n" + currentPlayer.name;
+        t_currentPlayer.text = "Current player: \n" + currentPlayer.name + "\n" + currentPlayer.state + "\nPhase";
         t_currentScore.text = "Score: \n" + currentPlayer.GetScore();
         t_currentDiscard.text = "Discarded: \n " + currentPlayer.discard.Count;
         //Ping current player in editor
