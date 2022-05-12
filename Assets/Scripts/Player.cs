@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
         if (go_discard.transform.childCount > 1)
         {
             var destroyedCard = go_discard.transform.GetChild(0).gameObject;
-            EditorGUIUtility.PingObject(destroyedCard);
+            //EditorGUIUtility.PingObject(destroyedCard);
             GameObject.Destroy(destroyedCard);
         }
     }
